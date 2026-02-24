@@ -1,3 +1,9 @@
+// Componente de pie de página de la aplicación.
+// Se muestra en la parte inferior de la interfaz y contiene:
+// - El año actual (se calcula dinámicamente)
+// - El nombre de la aplicación y derechos reservados
+// - El crédito de desarrollo
+
 import React, { FC, memo } from "react"
 import { CFooter } from "@coreui/react"
 

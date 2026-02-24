@@ -1,3 +1,16 @@
+/**
+ * Archivo doc.ts
+ *
+ * Este endpoint sirve para exponer la documentación de la API en formato OpenAPI/Swagger.
+ * Se utiliza junto con Swagger UI para que los desarrolladores puedan:
+ * - Consultar los endpoints disponibles
+ * - Revisar parámetros y respuestas
+ * - Probar las rutas directamente desde la interfaz
+ *
+ * Normalmente se accede desde /api/docs y se integra con swagger-ui-react
+ * en la página ApiDocsPage.
+ */
+
 import type { NextApiRequest, NextApiResponse } from "next";
 import { createSwaggerSpec } from "next-swagger-doc";
 

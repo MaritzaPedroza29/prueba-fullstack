@@ -9,7 +9,6 @@ export default function GitHubLogin() {
   const { data: session, isPending, error } = authClient.useSession();
   const router = useRouter();
 
-  // Si hay sesión, redirigir al dashboard
   useEffect(() => {
     if (session) {
       router.push("/dashboard");

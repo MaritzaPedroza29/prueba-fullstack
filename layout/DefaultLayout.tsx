@@ -18,11 +18,10 @@ const isPublicPage = publicRoutes.includes(pathname);
 
 
   if (isPublicPage) {
-    // Si es login, no renderizamos sidebar/header/footer
     return <main className="flex-1 p-6">{children}</main>;
   }
 
-  // Layout completo para páginas privadas
+
   return (
     <div className="flex min-h-screen bg-gray-100">
       {/* Sidebar */}

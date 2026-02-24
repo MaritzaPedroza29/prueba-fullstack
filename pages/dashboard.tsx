@@ -7,6 +7,13 @@ import CustomModal from "@/components/CustomModal"
 import Swal from "sweetalert2"
 import { isAdmin } from "@/utils/authHelpers"
 
+// Tipo de movimiento financiero
+// - id: identificador único
+// - concept: descripción del movimiento
+// - amount: monto
+// - type: tipo de movimiento (INCOME o EXPENSE)
+// - date: fecha del movimiento
+// - user: usuario que lo registró
 type Movement = {
   id: string
   concept: string
@@ -16,6 +23,7 @@ type Movement = {
   user: string
 }
 
+// Definición de columnas para la tabla de movimientos
 const movementColumns: Column<Movement>[] = [
   { header: "Concepto", accessor: "concept" },
   { header: "Monto", accessor: "amount" },
@@ -25,22 +33,24 @@ const movementColumns: Column<Movement>[] = [
 ]
 
 export default function HomePage() {
-  const { data: session } = authClient.useSession()
-  const [movements, setMovements] = useState<Movement[]>([])
-  const [showModal, setShowModal] = useState(false)
+  const { data: session } = authClient.useSession() // Obtener sesión actual
+  const [movements, setMovements] = useState<Movement[]>([]) // Lista de movimientos
+  const [showModal, setShowModal] = useState(false) // Estado para mostrar/ocultar modal
 
-  // Campos del formulario
+  // Campos controlados del formulario
   const [concepto, setConcepto] = useState("")
   const [monto, setMonto] = useState("")
   const [fecha, setFecha] = useState("")
   const [type, setType] = useState<MovementType>(MovementType.INCOME)
 
+  // Cargar movimientos al montar el componente
   useEffect(() => {
     fetch("/api/movements")
       .then((res) => res.json())
       .then((data) => setMovements(data))
   }, [])
 
+  // Manejar envío del formulario para crear movimiento
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     const res = await fetch("/api/movements", {
@@ -55,24 +65,26 @@ export default function HomePage() {
     })
 
     if (res.ok) {
+      // Recargar lista de movimientos después de crear uno nuevo
       await fetch("/api/movements")
         .then((res) => res.json())
         .then((data) => setMovements(data))
 
-        setShowModal(false)
+      setShowModal(false)
 
-        Swal.fire({ icon: "success", title: "Movimiento creado", text: "Guardado con éxito" })
-      } else {
-        Swal.fire({ icon: "error", title: "Error", text: "No se pudo crear el movimiento" })
-      }
+      Swal.fire({ icon: "success", title: "Movimiento creado", text: "Guardado con éxito" })
+    } else {
+      Swal.fire({ icon: "error", title: "Error", text: "No se pudo crear el movimiento" })
     }
+  }
 
   return (
     <div className="p-6">
+      {/* Título de la página */}
       <h2 className="text-xl font-bold mb-4">Ingresos y Egresos</h2>
 
-      {/* Botón solo visible para ADMIN */}
-     {isAdmin(session) && (
+      {/* Botón para crear movimiento, visible solo para ADMIN */}
+      {isAdmin(session) && (
         <div className="mb-4 flex justify-end">
           <CustomButton text="Nuevo Movimiento" onClick={() => setShowModal(true)} />
         </div>
@@ -81,9 +93,10 @@ export default function HomePage() {
       {/* Tabla de movimientos */}
       <DataTable columns={movementColumns} data={movements} />
 
-      {/* Modal para crear movimiento */}
+      {/* Modal para crear nuevo movimiento */}
       <CustomModal title="Crear Movimiento" isOpen={showModal} onClose={() => setShowModal(false)}>
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Campo concepto */}
           <input
             type="text"
             placeholder="Concepto"
@@ -92,6 +105,8 @@ export default function HomePage() {
             className="border p-2 w-full"
             required
           />
+
+          {/* Campo monto */}
           <input
             type="number"
             placeholder="Monto"
@@ -100,7 +115,9 @@ export default function HomePage() {
             className="border p-2 w-full"
             required
           />
-         <select
+
+          {/* Campo tipo (Ingreso/Egreso) */}
+          <select
             value={type}
             onChange={(e) => setType(e.target.value as MovementType)}
             className="border p-2 w-full rounded-md shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -108,6 +125,8 @@ export default function HomePage() {
             <option value={MovementType.INCOME}>💰 Ingreso</option>
             <option value={MovementType.EXPENSE}>📉 Egreso</option>
           </select>
+
+          {/* Campo fecha */}
           <input
             type="date"
             value={fecha}
@@ -116,6 +135,7 @@ export default function HomePage() {
             required
           />
 
+          {/* Botones de acción */}
           <div className="flex justify-end space-x-2">
             <CustomButton text="Cancelar" onClick={() => setShowModal(false)} variant="secondary" />
             <CustomButton text="Guardar" variant="primary" />

@@ -4,8 +4,9 @@ import CustomButton from "@/components/CustomButton"
 import CustomModal from "@/components/CustomModal"
 import { Role } from "@prisma/client"
 import Swal from "sweetalert2"
-import { PencilIcon } from "@heroicons/react/24/outline" // ejemplo con Heroicons
+import { PencilIcon } from "@heroicons/react/24/outline" // Icono de edición
 
+// Tipo de usuario según la base de datos (Prisma)
 type User = {
   id: string
   name: string
@@ -15,18 +16,24 @@ type User = {
 }
 
 export default function UsersPage() {
+  // Estado para lista de usuarios
   const [users, setUsers] = useState<User[]>([])
+  // Estado para mostrar/ocultar modal
   const [showModal, setShowModal] = useState(false)
+  // Usuario seleccionado para edición
   const [selectedUser, setSelectedUser] = useState<User | null>(null)
+  // Campos controlados para edición
   const [nombre, setNombre] = useState("")
   const [rol, setRol] = useState<Role>("USER")
 
+  // Cargar usuarios al montar el componente
   useEffect(() => {
     fetch("/api/users")
       .then((res) => res.json())
       .then((data) => setUsers(data))
   }, [])
 
+  // Manejar clic en botón de edición
   const handleEdit = (user: User) => {
     setSelectedUser(user)
     setNombre(user.name)
@@ -34,6 +41,7 @@ export default function UsersPage() {
     setShowModal(true)
   }
 
+  // Definición de columnas para la tabla
   const userColumns: Column<User>[] = [
     { header: "Nombre", accessor: "name" },
     { header: "Correo", accessor: "email" },
@@ -43,6 +51,7 @@ export default function UsersPage() {
       header: "Acciones",
       accessor: "id",
       cell: (row: User) => (
+        // Botón de edición con icono
         <button
           onClick={() => handleEdit(row)}
           className="p-2 rounded hover:bg-gray-100"
@@ -56,9 +65,10 @@ export default function UsersPage() {
 
   return (
     <div className="p-6">
+      {/* Título de la página */}
       <h2 className="text-xl font-bold mb-4">Gestión de Usuarios</h2>
 
-      {/* Tabla de usuarios con columna de acciones */}
+      {/* Tabla de usuarios */}
       <DataTable columns={userColumns} data={users} />
 
       {/* Modal de edición */}
@@ -71,6 +81,7 @@ export default function UsersPage() {
           <form
             onSubmit={async (e) => {
               e.preventDefault()
+              // Llamada PUT para actualizar usuario
               const res = await fetch(`/api/users/${selectedUser.id}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
@@ -80,8 +91,10 @@ export default function UsersPage() {
                 }),
               })
 
+              // Manejo de respuesta
               if (res.ok) {
                 const updated = await res.json()
+                // Actualizar lista de usuarios en estado
                 setUsers(users.map((u) => (u.id === updated.id ? updated : u)))
                 setShowModal(false)
                 Swal.fire({
@@ -99,6 +112,7 @@ export default function UsersPage() {
             }}
             className="space-y-4"
           >
+            {/* Campo nombre */}
             <input
               type="text"
               placeholder="Nombre"
@@ -108,6 +122,7 @@ export default function UsersPage() {
               required
             />
 
+            {/* Campo rol */}
             <select
               value={rol}
               onChange={(e) => setRol(e.target.value as Role)}
@@ -117,6 +132,7 @@ export default function UsersPage() {
               <option value="USER">Usuario</option>
             </select>
 
+            {/* Botones de acción */}
             <div className="flex justify-end space-x-2">
               <CustomButton
                 text="Cancelar"

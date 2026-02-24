@@ -1,3 +1,9 @@
+// Definición del tipo Session.
+// Representa la información de sesión que devuelve el cliente de autenticación.
+// Incluye:
+// - user: datos básicos del usuario (id, email, nombre, rol, imagen)
+// - session: metadatos de la sesión (id, fechas de creación/actualización)
+
 type Session = {
   user?: {
     id?: string
@@ -5,14 +11,11 @@ type Session = {
     name?: string
     role?: string
     image?: string | null
-    // otras propiedades que quieras permitir
   }
-  // si tu authClient devuelve más cosas, puedes agregarlas aquí
   session?: {
     id?: string
     createdAt?: Date
     updatedAt?: Date
-    // etc...
   }
 }
 export function isAdmin(session: Session | null): boolean {

@@ -14,6 +14,9 @@ import {
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu"
 
+// Props que recibe el encabezado:
+// - onToggleSidebar: función para abrir/cerrar el sidebar
+// - user: datos del usuario autenticado (nombre, email, imagen)
 interface AppHeaderProps {
   onToggleSidebar?: () => void
   user?: {
@@ -22,14 +25,22 @@ interface AppHeaderProps {
     image?: string
   }
 }
+// Componente principal del encabezado de la aplicación.
+// Contiene:
+// - Botón para abrir/cerrar el sidebar
+// - Link al dashboard
+// - Icono de notificaciones
+// - Menú desplegable con avatar y opciones de usuario
 
 export default function AppHeader({ onToggleSidebar, user }: AppHeaderProps) {
    const router = useRouter()
 
-  const handleSignOut = async () => {
-    await authClient.signOut() // 👈 cierra sesión
-    router.push("/")      // 👈 redirige al login
-  }
+    // Función para cerrar sesión:
+      // Llama al cliente de autenticación y luego redirige al inicio
+    const handleSignOut = async () => {
+      await authClient.signOut() 
+      router.push("/")    
+    }
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b">
