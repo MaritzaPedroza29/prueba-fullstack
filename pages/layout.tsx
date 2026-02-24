@@ -3,8 +3,6 @@
 // Componente raíz de la aplicación.
 // Define la estructura principal de la interfaz y aplica Providers globales.
 // Se encarga de mostrar u ocultar el sidebar y el header según la ruta actual.
-
-import "@/styles/globals.css";
 import Providers from "./providers";
 import { usePathname } from "next/navigation";
 import {AppSidebar} from "@/components/AppSidebar";
