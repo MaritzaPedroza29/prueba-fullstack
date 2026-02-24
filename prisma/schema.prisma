@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,34 +7,68 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id            String    @id
-  name          String
-  email         String
-  emailVerified Boolean
-  image         String?
-  phone         String?          // 👈 NUEVO
-  role          Role      @default(ADMIN) // 👈 NUEVO
-  createdAt     DateTime
-  updatedAt     DateTime
-  sessions      Session[]
-  accounts      Account[]
-  movements     Movement[]       // 👈 NUEVA RELACIÓN
-
-  //@@unique([email])
-  //@@map("user")
-}
-
 model Movement {
-  id        String        @id @default(uuid())
+  id        String       @id @default(uuid())
   concept   String
   amount    Float
   type      MovementType
   date      DateTime
-  createdAt DateTime      @default(now())
-
+  createdAt DateTime     @default(now())
   userId    String
-  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Account {
+  id                    String    @id(map: "account_pkey")
+  accountId             String
+  providerId            String
+  userId                String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime
+  updatedAt             DateTime
+  User                  User      @relation(fields: [userId], references: [id], onDelete: Cascade, map: "account_userId_fkey")
+}
+
+model Session {
+  id        String   @id(map: "session_pkey")
+  expiresAt DateTime
+  token     String   @unique(map: "session_token_key")
+  createdAt DateTime
+  updatedAt DateTime
+  ipAddress String?
+  userAgent String?
+  userId    String
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade, map: "session_userId_fkey")
+}
+
+model User {
+  id            String     @id(map: "user_pkey")
+  name          String
+  email         String     @unique(map: "user_email_key")
+  emailVerified Boolean
+  image         String?
+  phone         String?
+  role          Role       @default(ADMIN)
+  createdAt     DateTime
+  updatedAt     DateTime
+  Account       Account[]
+  movements     Movement[]
+  Session       Session[]
+}
+
+model Verification {
+  id         String    @id(map: "verification_pkey")
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
 }
 
 enum Role {
@@ -51,49 +79,4 @@ enum Role {
 enum MovementType {
   INCOME
   EXPENSE
-}
-
-model Session {
-  id        String   @id
-  expiresAt DateTime
-  token     String
-  createdAt DateTime
-  updatedAt DateTime
-  ipAddress String?
-  userAgent String?
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  /*@@unique([token])
-  @@map("session")*/
-}
-
-model Account {
-  id                    String    @id
-  accountId             String
-  providerId            String
-  userId                String
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  accessToken           String?
-  refreshToken          String?
-  idToken               String?
-  accessTokenExpiresAt  DateTime?
-  refreshTokenExpiresAt DateTime?
-  scope                 String?
-  password              String?
-  createdAt             DateTime
-  updatedAt             DateTime
-
-  //@@map("account")
-}
-
-model Verification {
-  id         String    @id
-  identifier String
-  value      String
-  expiresAt  DateTime
-  createdAt  DateTime?
-  updatedAt  DateTime?
-
-  //@@map("verification")
 }

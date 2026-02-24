@@ -1,4 +1,5 @@
 import '@/styles/globals.css'
+import "swagger-ui-react/swagger-ui.css";
 import type { AppProps } from 'next/app'
 import { Provider } from 'react-redux'
 import { store } from '@/states/store'

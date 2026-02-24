@@ -2,22 +2,34 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { User, LayoutDashboard, BarChart3} from "lucide-react"
+import { User, LayoutDashboard, BarChart3 } from "lucide-react"
 import clsx from "clsx"
-
-const menuItems = [
-  { name: "inicio", path: "/dashboard", icon: LayoutDashboard },
-  { name: "usuarios", path: "/users", icon: User },
-  { name: "reportes", path: "/repost", icon: BarChart3 },
-]
+import { authClient } from "@/lib/auth-client"
+import { isAdmin } from "@/utils/authHelpers"
 
 export function AppSidebar() {
   const pathname = usePathname()
+  const { data: session } = authClient.useSession()
+  console.log("Sesión actual:", session)
+
+  // Menú base (siempre visible)
+  const baseItems = [
+    { name: "Ingresos y Egresos", path: "/dashboard", icon: LayoutDashboard },
+  ]
+
+  // Menú solo para administradores
+  const adminItems = [
+    { name: "Usuarios", path: "/users", icon: User },
+    { name: "Reportes", path: "/reports", icon: BarChart3 },
+  ]
+
+  // Decidir qué items mostrar
+  const menuItems = isAdmin(session) ? [...baseItems, ...adminItems] : baseItems
 
   return (
     <aside className="w-64 min-h-screen bg-gradient-to-b from-blue-600 to-blue-500 text-white p-6">
       <h1 className="text-2xl font-bold mb-10 tracking-wide">
-        Galactic World
+        FinTrack 
       </h1>
 
       <nav className="space-y-6">
@@ -31,9 +43,7 @@ export function AppSidebar() {
               href={item.path}
               className={clsx(
                 "flex items-center gap-3 transition",
-                isActive
-                  ? "font-semibold"
-                  : "opacity-80 hover:opacity-100"
+                isActive ? "font-semibold" : "opacity-80 hover:opacity-100"
               )}
             >
               <Icon size={20} />

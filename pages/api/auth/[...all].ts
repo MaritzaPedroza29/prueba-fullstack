@@ -1,9 +1,16 @@
 import { toNodeHandler } from "better-auth/node";
 import { auth } from "@/lib/auth";
-//import { auth } from "../../../lib/auth";
-console.log("🔥 AUTH ROUTE SE ESTA EJECUTANDO");
-console.log("🔥 auth.handler existe?", !!auth?.handler);
 
 export const config = { api: { bodyParser: false } };
+export const runtime = "nodejs";
 
 export default toNodeHandler(auth);
+/*import type { NextApiRequest, NextApiResponse } from "next";
+import { auth } from "@/lib/auth";
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  return auth.handler(req);
+}*/

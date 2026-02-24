@@ -4,6 +4,9 @@ import Link from "next/link"
 import { Menu, Bell } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { authClient } from "../lib/auth-client"
+import { useRouter } from "next/navigation"
+
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -21,6 +24,13 @@ interface AppHeaderProps {
 }
 
 export default function AppHeader({ onToggleSidebar, user }: AppHeaderProps) {
+   const router = useRouter()
+
+  const handleSignOut = async () => {
+    await authClient.signOut() // 👈 cierra sesión
+    router.push("/")      // 👈 redirige al login
+  }
+
   return (
     <header className="sticky top-0 z-50 bg-white border-b">
       <div className="flex items-center justify-between h-16 px-6">
@@ -68,7 +78,7 @@ export default function AppHeader({ onToggleSidebar, user }: AppHeaderProps) {
               <DropdownMenuItem>
                 Configuración
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={handleSignOut}>
                 Cerrar sesión
               </DropdownMenuItem>
             </DropdownMenuContent>
