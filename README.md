@@ -93,3 +93,99 @@ Paso 9: Probar el flujo
 - Editar Y Ver usuarios (/api/users).
 - Consultar documentación en Swagger UI (/api/docs).
 
+
+como funciona el proyecto en verce
+Paso 1: Subir cambios a GitHub
+
+Cada vez que modifiques algo:
+
+git add .
+git commit -m "mensaje"
+git push
+
+Paso 2: Crear proyecto en Vercel
+
+-Ir a https://vercel.com
+
+-Import Project o crear Project
+-seleccionar github para iniciar sesion
+-Seleccionar tu repo prueba-fullstack
+-Deploy
+
+Vercel automáticamente hace:
+
+npm install
+npm run build
+
+Paso 3: Crear Base de Datos en la nube
+
+Como tu base era local, necesitas una nueva.
+
+En Vercel:
+
+Storage → Create Database → Prisma Postgres
+
+Copiar el DATABASE_URL.
+
+Paso 4: Configurar Variables de Entorno en Vercel
+
+Ir a:
+
+Project → Settings → Environment Variables
+
+Agregar:
+
+DATABASE_URL=postgresql://...
+BETTER_AUTH_SECRET=la_misma_que_local
+BETTER_AUTH_URL=https://prueba-fullstack-gamma.vercel.app
+GITHUB_CLIENT_ID=...
+GITHUB_CLIENT_SECRET=...
+NEXT_PUBLIC_BASE_URL=https://prueba-fullstack-gamma.vercel.app
+
+Muy importante:
+Debe ser el dominio que dice Production en Vercel.
+
+
+Paso 5: Ajustar OAuth para Producción
+
+Volver a GitHub OAuth App y agregar:
+
+Homepage URL
+
+https://prueba-fullstack-gamma.vercel.app
+
+Authorization callback URL
+
+https://prueba-fullstack-gamma.vercel.app/api/auth/callback/github
+
+No usar dominios preview raros.
+
+
+Paso 6: Configurar Prisma para producción
+
+En tu package.json asegúrate de tener:
+
+"scripts": {
+  "build": "prisma generate && prisma migrate deploy && next build",
+  "postinstall": "prisma generate"
+}
+
+En producción NO se usa:
+
+prisma migrate dev 
+
+Se usa:
+
+prisma migrate deploy 
+
+
+Paso 7: Redeploy
+
+Haz:
+
+git commit --allow-empty -m "redeploy"
+git push
+
+Vercel volverá a construir el proyecto.
+
+
